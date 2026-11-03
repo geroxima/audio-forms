@@ -1,0 +1,974 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f7f7f8;
+        font-family: Arial, sans-serif;
+        color: #202124;
+      }
+
+      .container {
+        max-width: 720px;
+        margin: auto;
+        padding: 24px 16px 60px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 18px;
+        border: 1px solid #ddd;
+      }
+
+      h1 {
+        font-size: 25px;
+        margin-top: 0;
+      }
+
+      h2 {
+        font-size: 21px;
+      }
+
+      .subtitle {
+        color: #5f6368;
+        line-height: 1.5;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-top: 18px;
+        margin-bottom: 6px;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 13px;
+        font-size: 16px;
+        border: 1px solid #bbb;
+        border-radius: 8px;
+      }
+
+      button {
+        border: none;
+        border-radius: 8px;
+        padding: 13px 17px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 5px 4px 5px 0;
+      }
+
+      .primary {
+        background: #1a73e8;
+        color: white;
+      }
+
+      .record {
+        background: #d93025;
+        color: white;
+      }
+
+      .stop {
+        background: #5f6368;
+        color: white;
+      }
+
+      .save {
+        background: #188038;
+        color: white;
+      }
+
+      .secondary {
+        background: #e8eaed;
+        color: #202124;
+      }
+
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .language {
+        display: inline-block;
+        background: #e8f0fe;
+        color: #174ea6;
+        border-radius: 20px;
+        padding: 6px 11px;
+        font-size: 13px;
+        font-weight: bold;
+      }
+
+      .question-number {
+        color: #5f6368;
+        margin-top: 18px;
+      }
+
+      .instruction {
+        font-size: 18px;
+        line-height: 1.5;
+        margin: 16px 0;
+      }
+
+      audio {
+        width: 100%;
+        margin-top: 15px;
+      }
+
+      .status {
+        margin-top: 12px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #f1f3f4;
+        min-height: 20px;
+      }
+
+      .success {
+        background: #e6f4ea;
+        color: #137333;
+      }
+
+      .error {
+        background: #fce8e6;
+        color: #c5221f;
+      }
+
+      .progress-container {
+        height: 10px;
+        background: #e0e0e0;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .progress {
+        height: 100%;
+        width: 0%;
+        background: #1a73e8;
+        transition: width 0.3s;
+      }
+
+      .timer {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 12px 0;
+      }
+
+      .warning {
+        padding: 12px;
+        border-radius: 8px;
+        background: #fff4ce;
+        margin-top: 15px;
+        line-height: 1.45;
+      }
+
+      .consent {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        line-height: 1.45;
+      }
+
+      .consent input {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+
+      .finished {
+        text-align: center;
+        padding: 30px 15px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- ================================================= -->
+      <!-- INICIO -->
+      <!-- ================================================= -->
+
+      <div id="startScreen" class="card">
+        <h1>Prueba diagnóstica oral</h1>
+
+        <p class="subtitle">
+          Dominio del inglés y portugués en la atención hotelera de la ciudad de
+          Encarnación.
+        </p>
+
+        <p>
+          Escuchará distintas situaciones relacionadas con la atención de
+          huéspedes. Después de escuchar cada intervención deberá responder
+          oralmente en el mismo idioma.
+        </p>
+
+        <div class="warning">
+          Para realizar la prueba debe permitir el acceso al micrófono cuando el
+          navegador lo solicite.
+        </div>
+
+        <label for="codigo"> Código del participante * </label>
+
+        <input
+          id="codigo"
+          type="text"
+          placeholder="Ejemplo: R01"
+          maxlength="40"
+        />
+
+        <label for="hotel"> Código del hotel </label>
+
+        <input
+          id="hotel"
+          type="text"
+          placeholder="Ejemplo: H01"
+          maxlength="40"
+        />
+
+        <div class="consent">
+          <input id="consentimiento" type="checkbox" />
+
+          <span>
+            Acepto participar voluntariamente en esta prueba diagnóstica y
+            autorizo el uso académico de las respuestas, manteniendo la
+            confidencialidad de la información.
+          </span>
+        </div>
+
+        <br />
+
+        <button id="startButton" class="primary" type="button">
+          Comenzar prueba
+        </button>
+
+        <div id="startStatus" class="status hidden"></div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- PRUEBA -->
+      <!-- ================================================= -->
+
+      <div id="testScreen" class="hidden">
+        <div class="card">
+          <div class="progress-container">
+            <div id="progressBar" class="progress"></div>
+          </div>
+
+          <div id="progressText">0 de 20</div>
+        </div>
+
+        <div class="card">
+          <span id="languageLabel" class="language"></span>
+
+          <div id="questionNumber" class="question-number"></div>
+
+          <p class="instruction">
+            Escuche la intervención del huésped y responda oralmente en el mismo
+            idioma.
+          </p>
+
+          <button id="playQuestion" type="button" class="primary">
+            🔊 Escuchar pregunta
+          </button>
+
+          <hr style="border: 0; border-top: 1px solid #ddd; margin: 22px 0" />
+
+          <button id="recordButton" type="button" class="record">
+            🎤 Grabar respuesta
+          </button>
+
+          <button id="stopButton" type="button" class="stop" disabled>
+            ■ Detener
+          </button>
+
+          <div id="timer" class="timer">00:00</div>
+
+          <audio id="preview" controls class="hidden"></audio>
+
+          <br />
+
+          <button id="saveButton" type="button" class="save" disabled>
+            ✓ Guardar respuesta
+          </button>
+
+          <button id="nextButton" type="button" class="secondary" disabled>
+            Siguiente →
+          </button>
+
+          <div id="status" class="status">Primero escuche la pregunta.</div>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- FINAL -->
+      <!-- ================================================= -->
+
+      <div id="finishScreen" class="card hidden finished">
+        <h2>Prueba finalizada</h2>
+
+        <p>Las respuestas fueron registradas correctamente.</p>
+
+        <p>Muchas gracias por su participación.</p>
+
+        <div id="finalStatus" class="status"></div>
+      </div>
+    </div>
+
+    <script>
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbwqtUxdddh5M-tvZrWvlBszy4-Ghbns0Mvkh_QaLUj_GkJleOqHn4AxxRMK5ryPqPc-/exec";
+
+      function enviar(datos) {
+        return fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(datos),
+        })
+          .then((r) => r.json())
+          .then((r) => {
+            if (!r.ok) throw new Error(r.error || "Error desconocido");
+            return r;
+          });
+      }
+
+      // =====================================================
+      // PREGUNTAS
+      // =====================================================
+
+      const preguntas = [
+        // --------------------
+        // INGLÉS
+        // --------------------
+
+        {
+          idioma: "EN",
+          numero: 1,
+          texto: "Good evening. I have a reservation.",
+        },
+
+        {
+          idioma: "EN",
+          numero: 2,
+          texto:
+            "My name is Robert Wilson. Could you check my reservation, please?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 3,
+          texto: "What time is breakfast?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 4,
+          texto: "Is there Wi-Fi in my room?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 5,
+          texto: "Where is the restaurant, please?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 6,
+          texto: "Can you send some more towels to my room, please?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 7,
+          texto:
+            "The air conditioning in my room isn’t working. Can you help me?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 8,
+          texto: "Can you recommend a good restaurant near the hotel?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 9,
+          texto:
+            "I need a taxi to the airport tomorrow at 6 a.m. Can you arrange one for me?",
+        },
+
+        {
+          idioma: "EN",
+          numero: 10,
+          texto: "I’d like to check out, please. Can I pay by credit card?",
+        },
+
+        // --------------------
+        // PORTUGUÉS
+        // --------------------
+
+        {
+          idioma: "PT",
+          numero: 1,
+          texto: "Boa noite. Tenho uma reserva em nome de Carlos Ferreira.",
+        },
+
+        {
+          idioma: "PT",
+          numero: 2,
+          texto:
+            "Queria fazer uma reserva para duas pessoas para amanhã. Tem apartamento disponível?",
+        },
+
+        {
+          idioma: "PT",
+          numero: 3,
+          texto: "Que horas é o café da manhã?",
+        },
+
+        {
+          idioma: "PT",
+          numero: 4,
+          texto: "Tem Wi-Fi no hotel?",
+        },
+
+        {
+          idioma: "PT",
+          numero: 5,
+          texto: "Preciso de duas toalhas extras no meu quarto, por favor.",
+        },
+
+        {
+          idioma: "PT",
+          numero: 6,
+          texto:
+            "O ar-condicionado do meu quarto não está funcionando. Pode me ajudar?",
+        },
+
+        {
+          idioma: "PT",
+          numero: 7,
+          texto: "Onde fica a rodoviária?",
+        },
+
+        {
+          idioma: "PT",
+          numero: 8,
+          texto:
+            "Gostaria de conhecer um lugar turístico aqui perto. O que você recomenda?",
+        },
+
+        {
+          idioma: "PT",
+          numero: 9,
+          texto:
+            "Gostaria de fazer o check-out, por favor. Meu quarto é o 205.",
+        },
+
+        {
+          idioma: "PT",
+          numero: 10,
+          texto:
+            "Meu voo sai só às cinco da tarde. Posso deixar minhas malas no hotel depois do check-out?",
+        },
+      ];
+
+      // =====================================================
+      // VARIABLES
+      // =====================================================
+
+      let indice = 0;
+
+      let codigo = "";
+      let hotel = "";
+
+      let mediaRecorder = null;
+      let stream = null;
+      let chunks = [];
+      let audioBlob = null;
+
+      let timerInterval = null;
+      let seconds = 0;
+
+      const MAX_RECORDING_SECONDS = 60;
+
+      // =====================================================
+      // ELEMENTOS
+      // =====================================================
+
+      const startScreen = document.getElementById("startScreen");
+
+      const testScreen = document.getElementById("testScreen");
+
+      const finishScreen = document.getElementById("finishScreen");
+
+      const startButton = document.getElementById("startButton");
+
+      const playQuestion = document.getElementById("playQuestion");
+
+      const recordButton = document.getElementById("recordButton");
+
+      const stopButton = document.getElementById("stopButton");
+
+      const saveButton = document.getElementById("saveButton");
+
+      const nextButton = document.getElementById("nextButton");
+
+      const preview = document.getElementById("preview");
+
+      const status = document.getElementById("status");
+
+      const timer = document.getElementById("timer");
+
+      // =====================================================
+      // COMENZAR
+      // =====================================================
+
+      startButton.addEventListener("click", async () => {
+        codigo = document.getElementById("codigo").value.trim();
+
+        hotel = document.getElementById("hotel").value.trim();
+
+        const consentimiento =
+          document.getElementById("consentimiento").checked;
+
+        if (!codigo) {
+          mostrarInicio("Ingrese el código del participante.", true);
+
+          return;
+        }
+
+        if (!consentimiento) {
+          mostrarInicio(
+            "Debe aceptar la participación voluntaria para continuar.",
+            true,
+          );
+
+          return;
+        }
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia ||
+          typeof MediaRecorder === "undefined"
+        ) {
+          mostrarInicio(
+            "Este navegador no permite realizar la grabación. Intente utilizar Chrome, Edge o Safari actualizado.",
+            true,
+          );
+
+          return;
+        }
+
+        /*
+         * Pedimos permiso al micrófono al comenzar.
+         */
+
+        try {
+          const testStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+
+          testStream.getTracks().forEach((track) => track.stop());
+        } catch (error) {
+          mostrarInicio(
+            "No se pudo acceder al micrófono. Revise los permisos del navegador.",
+            true,
+          );
+
+          return;
+        }
+
+        startScreen.classList.add("hidden");
+
+        testScreen.classList.remove("hidden");
+
+        cargarPregunta();
+      });
+
+      // =====================================================
+      // ESCUCHAR PREGUNTA
+      // =====================================================
+
+      playQuestion.addEventListener("click", () => reproducirPregunta());
+
+      function reproducirPregunta() {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          return;
+        }
+
+        speechSynthesis.cancel();
+
+        const pregunta = preguntas[indice];
+
+        const utterance = new SpeechSynthesisUtterance(pregunta.texto);
+
+        utterance.lang = pregunta.idioma === "EN" ? "en-US" : "pt-BR";
+
+        utterance.rate = 0.88;
+        utterance.pitch = 1;
+
+        const voices = speechSynthesis.getVoices();
+
+        const preferred = voices.find(
+          (voice) =>
+            voice.lang &&
+            voice.lang
+              .toLowerCase()
+              .startsWith(pregunta.idioma === "EN" ? "en" : "pt"),
+        );
+
+        if (preferred) {
+          utterance.voice = preferred;
+        }
+
+        utterance.onstart = () => {
+          status.textContent = "Escuchando intervención del huésped...";
+        };
+
+        utterance.onend = () => {
+          status.textContent = "Ahora puede grabar su respuesta.";
+        };
+
+        speechSynthesis.speak(utterance);
+      }
+
+      // =====================================================
+      // GRABAR
+      // =====================================================
+
+      recordButton.addEventListener("click", comenzarGrabacion);
+
+      async function comenzarGrabacion() {
+        speechSynthesis.cancel();
+
+        audioBlob = null;
+
+        preview.classList.add("hidden");
+
+        saveButton.disabled = true;
+        nextButton.disabled = true;
+
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+            },
+          });
+
+          const mimeType = elegirFormatoAudio();
+
+          const options = mimeType ? { mimeType: mimeType } : {};
+
+          mediaRecorder = new MediaRecorder(stream, options);
+
+          chunks = [];
+
+          mediaRecorder.addEventListener("dataavailable", (event) => {
+            if (event.data.size > 0) {
+              chunks.push(event.data);
+            }
+          });
+
+          mediaRecorder.addEventListener("stop", () => {
+            audioBlob = new Blob(chunks, {
+              type: mediaRecorder.mimeType || mimeType || "audio/webm",
+            });
+
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            preview.src = audioUrl;
+
+            preview.classList.remove("hidden");
+
+            saveButton.disabled = false;
+
+            status.textContent =
+              "Grabación lista. Puede escucharla, volver a grabar o guardarla.";
+
+            detenerStream();
+          });
+
+          mediaRecorder.start();
+
+          recordButton.disabled = true;
+          stopButton.disabled = false;
+          playQuestion.disabled = true;
+
+          status.textContent = "🔴 Grabando respuesta...";
+
+          iniciarTimer();
+        } catch (error) {
+          status.textContent =
+            "No se pudo iniciar la grabación. Revise los permisos del micrófono.";
+
+          status.className = "status error";
+        }
+      }
+
+      // =====================================================
+      // DETENER
+      // =====================================================
+
+      stopButton.addEventListener("click", detenerGrabacion);
+
+      function detenerGrabacion() {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+        }
+
+        detenerTimer();
+
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+        playQuestion.disabled = false;
+      }
+
+      // =====================================================
+      // TIMER
+      // =====================================================
+
+      function iniciarTimer() {
+        seconds = 0;
+
+        timer.textContent = "00:00";
+
+        clearInterval(timerInterval);
+
+        timerInterval = setInterval(() => {
+          seconds++;
+
+          const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
+
+          const secs = String(seconds % 60).padStart(2, "0");
+
+          timer.textContent = minutes + ":" + secs;
+
+          if (seconds >= MAX_RECORDING_SECONDS) {
+            detenerGrabacion();
+          }
+        }, 1000);
+      }
+
+      function detenerTimer() {
+        clearInterval(timerInterval);
+      }
+
+      // =====================================================
+      // GUARDAR
+      // =====================================================
+
+      saveButton.addEventListener("click", guardarRespuesta);
+
+      async function guardarRespuesta() {
+        if (!audioBlob) {
+          return;
+        }
+
+        saveButton.disabled = true;
+        recordButton.disabled = true;
+
+        status.className = "status";
+
+        status.textContent = "Guardando respuesta...";
+
+        try {
+          const base64 = await blobToBase64(audioBlob);
+
+          const pregunta = preguntas[indice];
+
+          enviar({
+            codigo: codigo,
+            hotel: hotel,
+            idioma: pregunta.idioma,
+            pregunta: pregunta.numero,
+            situacion: pregunta.texto,
+            mimeType: audioBlob.type || "audio/webm",
+            base64: base64,
+          })
+            .then(() => {
+              status.className = "status success";
+              status.textContent = "✓ Respuesta guardada correctamente.";
+              nextButton.disabled = false;
+              recordButton.disabled = false;
+              actualizarProgreso(indice + 1);
+            })
+            .catch((error) => {
+              status.className = "status error";
+              status.textContent =
+                "No se pudo guardar el audio: " + error.message;
+              saveButton.disabled = false;
+              recordButton.disabled = false;
+            });
+        } catch (error) {
+          status.className = "status error";
+
+          status.textContent = "Error al preparar el audio.";
+
+          saveButton.disabled = false;
+          recordButton.disabled = false;
+        }
+      }
+
+      // =====================================================
+      // SIGUIENTE
+      // =====================================================
+
+      nextButton.addEventListener("click", () => {
+        indice++;
+
+        if (indice >= preguntas.length) {
+          terminarPrueba();
+
+          return;
+        }
+
+        cargarPregunta();
+      });
+
+      function cargarPregunta() {
+        speechSynthesis.cancel();
+
+        const pregunta = preguntas[indice];
+
+        document.getElementById("languageLabel").textContent =
+          pregunta.idioma === "EN" ? "INGLÉS" : "PORTUGUÉS";
+
+        document.getElementById("questionNumber").textContent =
+          "Situación " + pregunta.numero + " de 10";
+
+        audioBlob = null;
+
+        preview.src = "";
+        preview.classList.add("hidden");
+
+        saveButton.disabled = true;
+        nextButton.disabled = true;
+
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+        playQuestion.disabled = false;
+
+        timer.textContent = "00:00";
+
+        status.className = "status";
+
+        status.textContent = "Primero escuche la intervención del huésped.";
+
+        actualizarProgreso(indice);
+      }
+
+      // =====================================================
+      // FINALIZAR
+      // =====================================================
+
+      function terminarPrueba() {
+        testScreen.classList.add("hidden");
+
+        finishScreen.classList.remove("hidden");
+
+        const finalStatus = document.getElementById("finalStatus");
+
+        finalStatus.textContent = "Registrando finalización...";
+
+        enviar({ accion: "finalizar", codigo: codigo, hotel: hotel })
+          .then((resultado) => {
+            finalStatus.className = "status success";
+            finalStatus.textContent =
+              "Se registraron " +
+              resultado.cantidad +
+              " audios para este participante.";
+          })
+          .catch(() => {
+            finalStatus.className = "status error";
+            finalStatus.textContent =
+              "Los audios fueron enviados, pero no se pudo registrar la finalización.";
+          });
+      }
+
+      // =====================================================
+      // UTILIDADES
+      // =====================================================
+
+      function actualizarProgreso(valor) {
+        const porcentaje = Math.round((valor / preguntas.length) * 100);
+
+        document.getElementById("progressBar").style.width = porcentaje + "%";
+
+        document.getElementById("progressText").textContent =
+          valor + " de " + preguntas.length;
+      }
+
+      function elegirFormatoAudio() {
+        const formatos = [
+          "audio/webm;codecs=opus",
+
+          "audio/webm",
+
+          "audio/mp4",
+
+          "audio/ogg;codecs=opus",
+        ];
+
+        for (const formato of formatos) {
+          if (MediaRecorder.isTypeSupported(formato)) {
+            return formato;
+          }
+        }
+
+        return "";
+      }
+
+      function detenerStream() {
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+
+          stream = null;
+        }
+      }
+
+      function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+
+          reader.onloadend = () => {
+            const result = reader.result;
+
+            const base64 = result.split(",")[1];
+
+            resolve(base64);
+          };
+
+          reader.onerror = reject;
+
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      function mostrarInicio(mensaje, error) {
+        const box = document.getElementById("startStatus");
+
+        box.classList.remove("hidden");
+
+        box.className = error ? "status error" : "status";
+
+        box.textContent = mensaje;
+      }
+    </script>
+  </body>
+</html>
